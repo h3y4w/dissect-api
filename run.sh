@@ -3,11 +3,11 @@
 
 function getRepo {
     sudo apt-get install git
-    curl -H "Accept: application/json" -X GET "$base_url/downloadRSA" > ~/home/ubuntu/id_rsa
+    curl -H "Accept: application/json" -X GET "$base_url/downloadRSA" > /home/ubuntu/.ssh/id_rsa
     eval "$(ssh-agent -s)"
     ssh-add /home/ubuntu/.ssh/id_rsa
     mkdir /home/ubuntu/service
-    git clone git@github.com:h3y4w/dissect-services.git ~/service
+    git clone git@github.com:h3y4w/dissect-services.git /home/ubuntu/service
 }
 sudo mkfs -t ext4 /dev/xvdb
 sudo mkdir /file
