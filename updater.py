@@ -1,8 +1,8 @@
 from flask import Flask, request, make_response
 from flask_restful import Resource, Api, reqparse
 from distutils.version import StrictVersion
-run_file='/home/ubuntu/run.sh'
-rsa_file='home/ubuntu/id_rsa'
+run_file='/home/ubuntu/dissect-api/run.sh'
+rsa_file='home/ubuntu/dissect-api/id_rsa'
 
 class checkVersion (Resource):
     def get(self):
@@ -66,6 +66,6 @@ class currentFileManip (Resource):
 if __name__== "__main__":
     app = Flask(__name__)
     api = Api(app)
-    api.add_resource(checkVersion,'/checkVersion')
+    api.add_resource(downloadRSA,'/downloadRSA')
     api.add_resource(downloadCurrentVersion,'/downloadCurrentVersion')
     app.run(debug=True,host="0.0.0.0",port=80)
