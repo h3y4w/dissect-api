@@ -2,7 +2,7 @@ from flask import Flask, request, make_response
 from flask_restful import Resource, Api, reqparse
 from distutils.version import StrictVersion
 run_file='/home/ubuntu/dissect-api/run.sh'
-rsa_file='home/ubuntu/dissect-api/id_rsa'
+rsa_file='/home/ubuntu/dissect-api/id_rsa'
 
 class checkVersion (Resource):
     def get(self):
