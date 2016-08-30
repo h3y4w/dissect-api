@@ -3,7 +3,7 @@
 
 function runRepo {
     cd /home/ubuntu
-    python dissect-workers-master/test.py
+    python dissect-workers-master/main.py
 }
 
 function mountEBS {
@@ -13,7 +13,6 @@ sudo mount /dev/xvdb /file
 }
 
 mountEBS
-installRepo
 runRepo
 
 
