@@ -4,9 +4,9 @@
 function getandRunRepo {
     curl -H "Accept: application/json" -X GET "$base_url/downloadRSA" > /home/ubuntu/.ssh/id_rsa
     eval "$(ssh-agent -s)"
-    ssh-add /home/ubuntu/.ssh/id_rsa
+    sudo ssh-add /home/ubuntu/.ssh/id_rsa
     cd /home/ubuntu/
-    git clone git@github.com:h3y4w/dissect-workers.git
+    sudo git clone git@github.com:h3y4w/dissect-workers.git
     cd dissect-workers
     python test.py
 }
