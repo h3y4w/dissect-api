@@ -3,7 +3,7 @@
 
 function runRepo {
     cd /home/ubuntu
-    python dissect-workers-master/main.py
+    #python dissect-workers-master/main.py
 }
 
 function mountEBS {
