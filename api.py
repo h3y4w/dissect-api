@@ -19,7 +19,6 @@ class checkVersion (Resource):
         except Exception as e:
             return {'ERROR':str(e)}
 
-
 class downloadCurrentVersion(Resource):
 
     def get(self):
