@@ -1,6 +1,6 @@
 from flask_restful import Resource,reqparse
 import bugsnag
-import bugsnaginfo
+import os
 
 class manager(Resource):
     def get(self,id):
@@ -14,7 +14,7 @@ class manager(Resource):
             try:
                 print 'PING FROM MANAGER {}'.format(id)
                 #MAKE SURE HEARTBEAT SHOWS ITS RUNNING
-                #ALL IF API GOES DOWN FORWHATEVER REASON, IT WILL GET ALL RUNNNG SERVICES
+                #ALL IF API GES DOWN FORWHATEVER REASON, IT WILL GET ALL RUNNNG SERVICES
                 #Input LAST_PING: (current time)  into DB, json or whatever
                 r['Success']={'LAST_PING':'CURRENT TIME 9:44'}
                 return r
@@ -54,5 +54,5 @@ class manager(Resource):
                 return {'Error':{'Request':'DELETE'}}
 
 bugsnag.configure(
-    api_key=bugsnaginfo.key
+    api_key=os.environ['bugsnag_key']
 )
