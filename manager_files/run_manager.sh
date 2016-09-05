@@ -1,8 +1,9 @@
 #!/bin/bash
 #0.0.1
 
-base_url=%s
-echo $base_url > public_ip
+export api_ip=%s
+export manager_type='%s'
+base_url=$(printenv api_ip)
 
 function downloadSource {
     cd /home/ubuntu

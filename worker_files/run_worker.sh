@@ -1,6 +1,7 @@
 #!/bin/bash
 #0.0.1
 base_url=%s
+export FILE='%s'
 function downloadRepo {
     cd /home/ubuntu
     wget https://github.com/h3y4w/dissect-worker/archive/master.zip

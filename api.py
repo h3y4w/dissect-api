@@ -12,10 +12,10 @@ from flask import Flask
 from flask_restful import Resource, Api, reqparse, inputs
 from managerAPI import manager
 from ManagersAPI import Managers
-from WorkersAPI import Workers
+from WorkersAPI_ import Workers
+
 
 if __name__== "__main__":
-
     app = Flask(__name__)
     api = Api(app)
     bugsnag.configure(
@@ -51,8 +51,6 @@ if __name__== "__main__":
     ########################## worker ###########################
     #############################################################
     #JSAJDJSA KDJ ADK
-
-
 
     app.run(debug=True,host='localhost',port=5000)
     #app.run(debug=True,host="0.0.0.0",port=80)
