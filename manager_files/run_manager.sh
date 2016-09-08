@@ -2,6 +2,7 @@
 #0.0.1
 
 export api_ip=%s
+export api_url='http://%s'
 export manager_type='%s'
 base_url=$(printenv api_ip)
 

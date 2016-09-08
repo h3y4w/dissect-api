@@ -3,7 +3,6 @@ from flask import make_response
 import json
 import bugsnag
 import boto3
-import boto3conf
 import os
 
 class Managers(Resource):
@@ -78,12 +77,14 @@ class Managers(Resource):
             parser = reqparse.RequestParser()
             parser.add_argument('type',type=str,help='TYPE OF MANAGER - UPLOAD || DOWNLOAD')
             args = parser.parse_args()
+            api_ip = os.environ['api_ip']
+            api_url = "http://{}".format(api_ip)
             with open('manager_files/run_manager.sh','r') as f:
-                UserData=f.read() % (os.environ['api_ip'],args['type']) #Avoided .format() because of bug
+                UserData=f.read() % (api_ip, api_url, args['type']) #Avoided .format() because of bug
 
             try:
-                ec2 = boto3.resource('ec2', region_name='us-west-2', aws_access_key_id=boto3conf.info[0],
-                                    aws_secret_access_key=boto3conf.info[1])
+                ec2 = boto3.resource('ec2', region_name='us-west-2', aws_access_key_id=os.environ['aws_id'],
+                                    aws_secret_access_key=os.environ['aws_key'])
                 if ec2 is not None:
                     print "Successfully connected to AWS!"
 

@@ -44,7 +44,7 @@ if __name__== "__main__":
     ###########################################################
     api.add_resource(Workers, '/workers')
     api.add_resource(Workers.Spawn,'/workers/spawn', endpoint='spawnWorker')
-    api.add_resource(Workers.Active, '/workers/active', endpoint='activeWorker')
+    api.add_resource(Workers.Active, '/workers/<string:workerid>/active', endpoint='activeWorker')
     api.add_resource(Workers.DownloadRun, '/workers/download/run', endpoint='runWorker')
 
     #############################################################
@@ -52,5 +52,5 @@ if __name__== "__main__":
     #############################################################
     #JSAJDJSA KDJ ADK
 
-    app.run(debug=True,host='localhost',port=5000)
-    #app.run(debug=True,host="0.0.0.0",port=80)
+    app.run(debug=True,host='localhost',port=int(os.environ['port']))
+    #pp.run(debug=True,host="0.0.0.0",port=80)

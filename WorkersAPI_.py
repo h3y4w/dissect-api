@@ -1,4 +1,4 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 from flask import make_response,request
 import boto3
 import bugsnag
@@ -21,7 +21,7 @@ class Workers(Resource):
                                                 'sg-b2ba5fcb',
                                             ],
                                             UserData=UserData,
-                                            InstanceTyp='t2.micro',
+                                            InstanceType='t2.micro',
                                             KeyName='heyaws',
                                             BlockDeviceMappings=[
                                                 {
@@ -38,24 +38,46 @@ class Workers(Resource):
 
             instance.wait_until_running()
             instance.load()
-            dns=instance.public_dns_name
 
-            return {'Success':{'dns':dns}}
+            return {'Success': {'Instance':{'dns':instance.public_dns_name,
+                                            'id':instance.id
+                                            }
+                                }
+                    }
 
 
 
     class Active (Resource):
-        def get(self):
-            #gets whether or not its Active
-            pass
 
-        def delete(self):
-            #deletes a worker
-            pass
+        def instanceError(self, e):
+            return {"Success": {'error':str(e)}}
 
-        def put(self):
-            #change activeness
-            pass
+        def get(self, workerid):
+            try:
+                worker=ec2.Instance(workerid)
+            except Exception as e:
+                return self.instanceError(e)
+
+            else:
+                return {'Success': worker.state}
+
+        def delete(self, workerid):
+            try:
+                worker=ec2.Instance(workerid)
+            except Exception as e:
+                self.instanceError(e)
+
+            else:
+                return {"Success": worker.terminate()['TerminatingInstances'][0]['CurrentState']['Code'] in (32,48)} #32 means terminating, 48 means already terminated
+
+        def put(self, workerid):
+            try:
+                worker=ec2.Instance(workerid)
+            except Exception as e:
+                return self.instanceError(e)
+
+            else:
+                return {"Success": "ADD SOME SHIT EHER"}
 
     class DownloadRun(Resource):
             run_file='worker_files/run_worker.sh'
@@ -67,6 +89,9 @@ class Workers(Resource):
 
                 except Exception as e:
                     return {'Error':str(e)}
+
+class Status(Resource):
+    pass
 
 if __name__ is not "__main__":
     bugsnag.configure(
