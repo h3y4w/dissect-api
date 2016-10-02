@@ -1,0 +1,5 @@
+use abort ex-- abort(404)
+
+http://blog.miguelgrinberg.com/post/restful-authentication-with-flask
+
+> db doesn't update when it registers, have to restart program

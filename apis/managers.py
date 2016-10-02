@@ -4,7 +4,7 @@ import json
 import bugsnag
 import boto3
 import os
-
+import datetime
 class Managers(Resource):
     def get(self,id):
         try:
@@ -126,6 +126,65 @@ class Managers(Resource):
 
             except Exception as e:
                 return {'Error': str(e)}
+
+    #********************** Heartbeat *******************#
+    class Heartbeat(Resource):
+        def post(self, id):
+            r={}
+            try:
+                print 'PING FROM MANAGER {}'.format(id)
+                #MAKE SURE HEARTBEAT SHOWS ITS RUNNING
+                #ALL IF API GES DOWN FORWHATEVER REASON, IT WILL GET ALL RUNNNG SERVICES
+                #Input LAST_PING: (current time)  into DB, json or whatever
+                r['Success']={'LAST_PING':'CURRENT TIME 9:44'}
+                return  {'Success': {'Ping': {'Last': str(datetime.datetime.now())
+                                              }
+                                     }
+                         }
+            except Exception as e:
+                bugsnag.notify(
+                    Exception(str(e)),
+                    context="POST Request manager.Heartbeat"
+                )
+                return {'Error': {'Request': 'POST',
+                                  'Class' : 'heartbeat',
+                                  'e':str(e)
+                                  }
+                        }
+
+
+
+    #********************** active **********************#
+    class Active(Resource):
+        def put(self,id):
+            parser = reqparse.RequestParser()
+            parser.add_argument('mode',type=int,help='TRUE || FALSE')
+            args = parser.parse_args()
+            print "Changing MANAGER {} active to: {}".format(id, bool(args['mode']))
+
+        def get(self,id):
+            # CHECKS DB JSON OR SOME SHIT
+            print "MANAGER {} is active: {}".format(id, 'TRUE (CHANGE WHEN DB IS INTEGRATED)')
+
+        def delete(self,id):
+            try:
+                # DESTROYS MANAGER AFTER FINISHING CURRENT REQUESTS
+                print "DELETING MANAGER {}!".format(id)
+                return {'Success':{'Request':'DELETE'}}
+
+            except Exception as e:
+                print "ERROR: {}".format(e)
+                bugsnag.notify(
+                    e,
+                    context='DELETE REQUEST in manager.active - managerAPI.py'
+                )
+                return {'Error':{'Request':'DELETE',
+                                 'Class':'active',
+                                'e':str(e)
+                                 }
+                        }
+
+
 
 bugsnag.configure(
     api_key=os.environ['bugsnag_key']
