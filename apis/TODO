@@ -1,2 +1,4 @@
 FIX DATABSE FOR (OBJECT)Table
 automatically create fileparts when file is uploaded, in the same POST method for file. 
+continue working on errors with abort
+

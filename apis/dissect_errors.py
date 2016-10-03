@@ -34,7 +34,8 @@ class UserErrors:
         }
         abort(401, error)
 
-class Files:
+class FileErrors:
+
     @staticmethod
     def FileDoesNotExist():
         error = {

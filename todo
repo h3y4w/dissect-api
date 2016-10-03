@@ -1,4 +1,3 @@
-use abort ex-- abort(404)
 
 http://blog.miguelgrinberg.com/post/restful-authentication-with-flask
 

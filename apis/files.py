@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, request
 from dissect_auth import login_required, Tokens
+from dissect_errors import FileErrors
 db=SQLAlchemy()
 def file_setup(db_):
     global db
@@ -23,7 +24,7 @@ class FilePartTable(db.Model):
             id = db.Column(db.Integer, primary_key=True)
             file_id = db.Column(db.Integer)
             size = db.Column(db.Integer)
-            location = db.Column(varchar(20))
+            location = db.Column(db.String(20))
 
 class Files(Resource):
 
@@ -50,7 +51,10 @@ class Files(Resource):
         @login_required()
         def get(self, id):
             user_id = Tokens.get_user_id(request.headers['Authorization'])
-            f = Files.FileTable.query.filter_by(id=id).first()
+            f = FileTable.query.filter_by(id=id).first()
+            if f is None:
+                FileErrors.FileDoesNotExist()
+
             if f.user_id == user_id:
                 return {
                     'size': f.size,
@@ -64,7 +68,7 @@ class FileParts (Resource):
     def post(self):
         pass
 
-    class FilePart (resource):
+    class FilePart (Resource):
         def get(self):
             pass
 
