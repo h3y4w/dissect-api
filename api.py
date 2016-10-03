@@ -13,15 +13,24 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='mysql://localhost/dissect'
 api = Api(app)
 db = SQLAlchemy(app)
-
+import jsonify
 from apis.managers import Managers
 from apis.workers import Workers
 from apis.users import user_setup, Users
+from apis.files import file_setup, Files
 #from apis.tasks import task_setup, Tasks
 user_setup(db)
+file_setup(db)
 #task_setup(db)
 db.create_all()
 db.session.commit()
+
+@app.errorhandler(401)
+def error401(error):
+    print error
+    r = jsonify()
+    return r
+
 if __name__ == "__main__":
     try:
         bugsnag.configure(
@@ -53,6 +62,12 @@ if __name__ == "__main__":
     api.add_resource(Users.Login,'/users/login')
     api.add_resource(Users.hey,'/hey')
     api.add_resource(Users.Register,'/users/register')
+
+    ########################################
+    ##################FILES#################
+    ########################################
+    api.add_resource(Files,'/files')
+    api.add_resource(Files.File, '/files/<int:id>')
     ###########################################################
     ##################### Workers ############################
     ###########################################################

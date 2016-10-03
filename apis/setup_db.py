@@ -28,5 +28,13 @@ class User(db.Model):
         self.password = user_info['password'] #hash password here or b4
         self.role='regular'
 
+class File(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    parts = db.Column(db.Integer)
+    size = db.Column(db.Integer)
+    name = db.Column(db.String(100))
+
+
 db.create_all()
 db.session.commit()

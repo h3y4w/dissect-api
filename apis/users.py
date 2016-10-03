@@ -1,15 +1,13 @@
-from __future__ import absolute_import
-import jwt
 from flask_restful import Resource, abort, request
 from flask import make_response
-from datetime import datetime, timedelta
-from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
+from dissect_auth import Tokens, login_required
+from dissect_errors import UserErrors
 db=SQLAlchemy()
 def user_setup(db_):
     global db
     db=db_
-class User(db.Model):
+class UserTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
@@ -24,49 +22,14 @@ class User(db.Model):
         self.role='regular'
     @staticmethod
     def auth(user):
-        return User.query.filter_by(email=user['email'], password=user['password']).first()
+        return UserTable.query.filter_by(email=user['email'], password=user['password']).first()
 
-
-def login_and_role(*roles):
-    def wrapper(f):
-        @wraps(f)
-        def wrapped(*args, **kwargs):
-            print request.headers['Authorization']
-            payload=Tokens.valid(request.headers['Authorization'])
-            if payload['uro'] not in roles:
-                abort(401)
-            return f(*args, **kwargs)
-        return wrapped
-    return wrapper
-
-class Tokens (object):
-
-    @staticmethod
-    def valid(t):
-        try:
-            return jwt.decode(t, 'secret')
-        except jwt.ExpiredSignatureError:
-            r=make_response('Token Expired',401)
-            print 'Token Expired'
-            return abort(r)
-        except:
-            return {'uro':None}
-
-    @staticmethod
-    def generate(user):
-        payload = {
-            'uid': user.id,
-            'uro': user.role,
-            'iat': datetime.utcnow(),
-            'exp': datetime.utcnow() + timedelta(minutes=1)
-        }
-        return jwt.encode(payload,'secret')
 
 class Users:
     class Register(Resource):
         def post(self):
             params=request.get_json(force=True)
-            user = User(params)
+            user = UserTable(params)
             db.session.add(user)
             print db.session.commit()
             {
@@ -81,13 +44,14 @@ class Users:
         def post(self):
             params=request.get_json(force=True)#)
             print params
-            user = User.auth(params)
+            user = UserTable.auth(params)
             if user is not None:
                 return {'token': Tokens.generate(user)}
             else:
-                abort(401)
+                UserErrors.IncorrectLogin()
 
     class hey(Resource):
-        @login_and_role('regular')
-        def POST(self):
-            return 'itworked'
+        @login_required()
+        def get(self):
+            user_id = Tokens.get_user_id(request.headers['Authorization'])
+            return user_id

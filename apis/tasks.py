@@ -16,7 +16,7 @@ session = db.session()
 #)
 class Tasks(Resource):
     def get(self):
-        all_tasks=Task.query.all()
+        all_tasks=TaskTable.query.all()
         TASKS=[]
         for t in all_tasks:
             TASKS.append(t.id)
@@ -24,18 +24,18 @@ class Tasks(Resource):
 
     def post(self):
         params = request.get_json(force=True)
-        t=Task()
+        t=TaskTable()
         session.add(t)
         session.commit()
         return t.id
 
     class task(Resource):
         def get(self, id):
-            t=Task.query.filter_by(id=id).first()
+            t=TaskTable.query.filter_by(id=id).first()
             return json.dumps(t.getDict())
 
         def delete(self, id):
-            t=Task.query.filter_by(id=id).first()
+            t=TaskTable.query.filter_by(id=id).first()
             session.delete(t)
             session.commit()
             return {
@@ -43,7 +43,7 @@ class Tasks(Resource):
                 'Object':self.__class__.__name__,
                 'id': id
             }
-class Task(db.Model):
+class TaskTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     start = db.Column(db.DateTime)
     end = db.Column(db.DateTime)

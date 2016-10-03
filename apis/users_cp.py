@@ -97,14 +97,6 @@ class Users:
             size = db.Column(db.Integer)
             name = db.Column(db.String(100))
 
-        class FilePart(db.Model):
-            id = db.Column(db.Integer, primary_key=True)
-            file_id = db.Column(db.Integer)
-            size = db.Column(db.Integer)
-            location = db.Column(varchar(20))
-
-
-
 
 
 

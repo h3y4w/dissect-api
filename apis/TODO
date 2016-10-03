@@ -1,2 +1,2 @@
-implement abort method
-implement database for user info
+FIX DATABSE FOR (OBJECT)Table
+automatically create fileparts when file is uploaded, in the same POST method for file. 
