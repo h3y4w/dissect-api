@@ -13,23 +13,14 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='mysql://localhost/dissect'
 api = Api(app)
 db = SQLAlchemy(app)
-import jsonify
-from apis.managers import Managers
-from apis.workers import Workers
-from apis.users import user_setup, Users
-from apis.files import file_setup, Files
-#from apis.tasks import task_setup, Tasks
-user_setup(db)
-file_setup(db)
-#task_setup(db)
-db.create_all()
-db.session.commit()
+from resources.managers import Managers
+from resources.workers import Workers
+from resources.users import Users
+from resources.files import Files
+from resources.dissect_db import setup_db
+#from apis.tasks import Tasks
+setup_db(db)
 
-@app.errorhandler(401)
-def error401(error):
-    print error
-    r = jsonify()
-    return r
 
 if __name__ == "__main__":
     try:

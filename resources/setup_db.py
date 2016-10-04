@@ -1,9 +1,6 @@
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='mysql://localhost/dissect'
-db=SQLAlchemy(app)
+
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -36,5 +33,4 @@ class File(db.Model):
     name = db.Column(db.String(100))
 
 
-db.create_all()
-db.session.commit()
+
