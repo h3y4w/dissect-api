@@ -46,14 +46,14 @@ class User(db.Model):
 
     @staticmethod
     def auth(user_info):
-        u = User.query.filter_by(email=user_info['email'], password=user_info['password']).first()
+        u = db.session.query(User).filter_by(email=user_info['email'], password=user_info['password']).first()
         if u is None:
             UserErrors.IncorrectLogin()
         return u
 
     @staticmethod
     def change_password(user_info):
-        u = User.query.filter_by(email=user_info['email'], password=user_info['password']).first()
+        u = db.session.query(User).filter_by(email=user_info['email'], password=user_info['password']).first()
         if u is None:
             UserErrors.AccountDoesNotExist()
         u.password = User.__password_hash(user_info['new_password'])
@@ -79,8 +79,12 @@ class FileShare(db.Model):
         return add_to_db(FileShare(share_info))
 
     @staticmethod
+    def find_by_id(id):
+        return db.session.query(FileShare).query.filter_by(id=id).first()
+
+    @staticmethod
     def find_by_file_and_user_id(file_id, user_id):
-        return FileShare.query.filter_by(file_id=file_id, user_id=user_id).first()
+        return db.session.query(FileShare).filter_by(file_id=file_id, user_id=user_id).first()
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -91,33 +95,37 @@ class File(db.Model):
 
     def __init__ (self, file_info):
         self.user_id = file_info['user_id']
-        self.parts = file_info['parts']
+        self.parts = len(file_info['parts'])
         self.size = file_info['size']
         self.name = file_info['name']
 
     @staticmethod
     def create(file_info):
-        return add_to_db(File(file_info))
+
+        f = add_to_db(File(file_info))
+        for part in file_info['parts']:
+            FilePart.create(part, f.id)
+        return f
+
 
     @staticmethod
     def delete(file_id, user_id):
-        f = find_by
         pass
 
     def check_permission(self,user_id):
         permission = 0
-        print 'self.user_id {}'.format(self.user_id)
-        print 'user_id {}'.format(user_id)
         if self.user_id == user_id:
             return 7
         fs = FileShare.find_by_file_and_user_id(self.id, user_id)
         if fs is not None:
+            print 'found file share'
             permission = fs.permission
         return permission
 
     @staticmethod
     def find_by_id(id, user_id):
-        f = File.query.filter_by(id=id).first() #Error is happening here
+        #f = File.query.filter_by(id=id).first() #Error is happening here
+        f = db.session.query(File).filter_by(id=id).first()
         if f is not None:
             if f.check_permission(user_id)>=4:
                 return f
@@ -125,13 +133,23 @@ class File(db.Model):
             FileErrors.InsufficientFilePermission()
         FileErrors.FileDoesNotExist()
 
+    def get_parts(self):
+        return db.session.query(FilePart).filter_by(file_id = self.id).all()
+
 class FilePart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_id = db.Column(db.Integer)
     size = db.Column(db.Integer)
     location = db.Column(db.String(20))
 
+    def __init__(self, filepart_info, file_id):
+        self.file_id = file_id
+        self.location = filepart_info['location']
+        self.size = filepart_info['size']
 
+    @staticmethod
+    def create(filepart_info, file_id):
+        return add_to_db(FilePart(filepart_info, file_id))
 #FOR TESTING TO CREATE DB!!!
 if __name__ == "__main__":
     print 'Creating Tables'

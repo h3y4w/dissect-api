@@ -10,7 +10,7 @@ class UserErrors:
                 'Message': 'Account is not found'
             }
         }
-        abort(404, erro)
+        abort(404, error)
     @staticmethod
     def IncorrectLogin():
         error = {
@@ -46,6 +46,16 @@ class UserErrors:
 
 class FileErrors:
 
+    @staticmethod
+    def CannotShareFile():
+        error = {
+            'Status Code': '400',
+            'Error': {
+                'Type': 'Runtime error',
+                'Message': 'Cannot Share File'
+            }
+        }
+        abort(400, error)
     @staticmethod
     def FileDoesNotExist():
         error = {

@@ -31,11 +31,12 @@ class Tokens (object):
 
     @staticmethod
     def generate(user):
+        print "TOKEN IS SET NOT TO EXPIRE FOR A YEAR!!!"
         payload = {
             'uid': user.id,
             'uro': user.role,
             'iat': datetime.utcnow(),
-            'exp': datetime.utcnow() + timedelta(days=1)
+            'exp': datetime.utcnow() + timedelta(days=365)
         }
         return jwt.encode(payload,'secret')
 
