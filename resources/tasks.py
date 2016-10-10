@@ -1,61 +1,18 @@
-from flask_restful import Resource, abort, request
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-import boto3
-import os
-import json
-import inspect
-db=SQLAlchemy()
-def task_setup(db_):
-    global db
-    db=db_
-session = db.session()
+from flask_restful import Resource, request
 #uploadQueue = boto3.resource('sqs', region_name='us-west-2',
 #                             aws_access_key_id=os.environ['aws_key'],
 #                             aws_secret_access_key=os.environ['aws_secret']
 #)
-class Tasks(Resource):
+class Task(Resource):
     def get(self):
-        all_tasks=TaskTable.query.all()
-        TASKS=[]
-        for t in all_tasks:
-            TASKS.append(t.id)
-        return TASKS
+        pass
 
     def post(self):
-        params = request.get_json(force=True)
-        t=TaskTable()
-        session.add(t)
-        session.commit()
-        return t.id
+        pass
 
-    class task(Resource):
+    class Tasks(Resource):
         def get(self, id):
-            t=TaskTable.query.filter_by(id=id).first()
-            return json.dumps(t.getDict())
+            pass
 
         def delete(self, id):
-            t=TaskTable.query.filter_by(id=id).first()
-            session.delete(t)
-            session.commit()
-            return {
-                'Method':inspect.stack()[0][3],
-                'Object':self.__class__.__name__,
-                'id': id
-            }
-class TaskTable(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    start = db.Column(db.DateTime)
-    end = db.Column(db.DateTime)
-    stage = db.Column(db.Integer)
-    def __init__(self):
-        self.start = datetime.utcnow()
-        self.stage = 0
-
-    def getDict(self):
-        return {
-            'id': self.id,
-            'start': str(self.start),
-            'end': str(self.end),
-            'stage': self.stage
-        }
+            pass

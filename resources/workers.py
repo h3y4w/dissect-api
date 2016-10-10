@@ -93,10 +93,7 @@ class Workers(Resource):
     class Status (Resource):
         pass
 
-if __name__ is not "__main__":
-    bugsnag.configure(
-        api_key=os.environ['bugsnag_key']
-    )
-    ec2 = boto3.resource('ec2', region_name='us-west-2', aws_access_key_id=os.environ['aws_id'],
-                                  aws_secret_access_key=os.environ['aws_key'])
+#if __name__ is not "__main__":
+#    ec2 = boto3.resource('ec2', region_name='us-west-2', aws_access_key_id=os.environ['aws_id'],
+#                                  aws_secret_access_key=os.environ['aws_key'])
 

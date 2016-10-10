@@ -10,15 +10,16 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import bugsnag
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='mysql://localhost/dissect'
+app.config['SQLALCHEMY_DATABASE_URI']='mysql://deno@localhost/dissect'
 api = Api(app)
 db = SQLAlchemy(app)
 from resources.managers import Managers
 from resources.workers import Workers
-from resources.users import Users
-from resources.files import Files
+from resources.users import User
+from resources.files import File, FileShare
+from resources.tasks import Task
 from resources.dissect_db import setup_db
-#from apis.tasks import Tasks
+
 setup_db(db)
 
 
@@ -45,20 +46,23 @@ if __name__ == "__main__":
     #######################################
     ##################TASKS################
     #######################################
-    #api.add_resource(Tasks, '/tasks')
-    #api.add_resource(Tasks.task, '/tasks/<int:id>')
+    api.add_resource(Task, '/task')
+    api.add_resource(Task.Tasks, '/task/<int:id>')
     ########################################
     #################USERS##################
     ########################################
-    api.add_resource(Users.Login,'/users/login')
-    api.add_resource(Users.hey,'/hey')
-    api.add_resource(Users.Register,'/users/register')
+    api.add_resource(User.Login,'/user/login')
+    api.add_resource(User.Register,'/user/register')
+    api.add_resource(User.VirtualDirectory, '/user/vd')
 
     ########################################
     ##################FILES#################
     ########################################
-    api.add_resource(Files,'/files')
-    api.add_resource(Files.File, '/files/<int:id>')
+    api.add_resource(File,'/file')
+    api.add_resource(File.Files, '/file/<int:id>')
+
+    api.add_resource(FileShare, '/file/share')
+    api.add_resource(FileShare.FileShares, '/file/share/<int:id>')
     ###########################################################
     ##################### Workers ############################
     ###########################################################
@@ -67,5 +71,5 @@ if __name__ == "__main__":
     api.add_resource(Workers.DownloadRun, '/workers/download/run', endpoint='runWorker')
 
     api.add_resource(Workers.Active, '/workers/<string:workerid>/active', endpoint='activeWorker')
-    app.run(debug=True,host='localhost',port=int(os.environ['port']))
+    app.run(debug=True,host='0.0.0',port=8080)
 

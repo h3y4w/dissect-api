@@ -1,4 +1,5 @@
-FIX DATABSE FOR (OBJECT)Table
-automatically create fileparts when file is uploaded, in the same POST method for file. 
 continue working on errors with abort
+SET UP GET REQUEST FOR /manager/queue_url?region='' #get queue url for a certain region - query database
+automatically create thumbnails for images that are uploaded
+
 

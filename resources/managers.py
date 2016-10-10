@@ -186,6 +186,3 @@ class Managers(Resource):
 
 
 
-bugsnag.configure(
-    api_key=os.environ['bugsnag_key']
-)

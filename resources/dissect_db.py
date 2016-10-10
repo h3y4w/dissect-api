@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-from dissect_errors import FileErrors, UserErrors
-
+from dissect_errors import FileErrors, UserErrors, NodeErrors
+from datetime import datetime
 
 #FOR TESTING TO CREATE DB!!!
 if __name__ == "__main__":
@@ -8,7 +8,6 @@ if __name__ == "__main__":
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI']='mysql://localhost/dissect'
     db=SQLAlchemy(app)
-
 else:
     db = SQLAlchemy()
 
@@ -22,8 +21,16 @@ def add_to_db(obj):
     db.session.commit()
     return obj
 
+def remove_from_db(obj):
+    db.session.delete(obj)
+    db.session.commit()
+
 def to_dict(obj):
     return {o.name: getattr(obj, o.name) for o in obj.__table__.columns}
+
+################################################################################
+ ################################ MODEL #######################################
+  ############################################################################
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -63,6 +70,72 @@ class User(db.Model):
     def __password_hash(password):
         return password
 
+class Node(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer)
+    type = db.Column(db.String(10)) #folder or file
+    file_id = db.Column(db.Integer)
+    name = db.Column(db.String(100))
+    icon = db.Column(db.String(250))
+    favorite = db.Column(db.Boolean, default=False)
+    def __init__(node_info):
+        pass
+
+    @staticmethod
+    def find_by_id(id, user_id):
+        node = db.session.query(Node).filter_by(id=id).first()
+        if node is not None:
+            if node.user_id == user_id:
+                return node
+            NodeErrors.InsufficientNodePermission()
+        NodeErrors.NodeDoesNotExist()
+
+    @staticmethod
+    def create(node_info):
+        return add_to_db(Node(node_info))
+
+    def delete(self):
+        try:
+            remove_from_db(self)
+        except:
+            return False
+        return True
+
+    def move(self, parent_id):
+        self.parent_id = parent_id
+        db.session.commit()
+
+    def rename(self, name):
+        self.name = name
+        db.session.commit()
+
+    def get_children(self):
+        pass
+
+    def favorite(self, active):
+        self.favorite = active
+        db.session.commit()
+
+    def change_icon(self, icon):
+        self.icon = icon
+        db.session.commit()
+
+    @staticmethod
+    def jstree_format(self, nodes):
+        data = []
+        for node in nodes:
+            if node.parent_id == 0: node.parent_id = '#'
+            if node.icon == None: node.icon = "default"
+            temp = {
+                "id": node.id,
+                "parent": node.parent_id,
+                "text": node.name,
+                "type": node.type,
+                "icon": node.icon
+            }
+            data.append(temp)
+
 class FileShare(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_id = db.Column(db.Integer)
@@ -92,7 +165,6 @@ class File(db.Model):
     parts = db.Column(db.Integer)
     size = db.Column(db.Integer)
     name = db.Column(db.String(100))
-
     def __init__ (self, file_info):
         self.user_id = file_info['user_id']
         self.parts = len(file_info['parts'])
@@ -108,7 +180,6 @@ class File(db.Model):
         return f
 
 
-    @staticmethod
     def delete(file_id, user_id):
         pass
 
@@ -124,7 +195,6 @@ class File(db.Model):
 
     @staticmethod
     def find_by_id(id, user_id):
-        #f = File.query.filter_by(id=id).first() #Error is happening here
         f = db.session.query(File).filter_by(id=id).first()
         if f is not None:
             if f.check_permission(user_id)>=4:
@@ -150,6 +220,25 @@ class FilePart(db.Model):
     @staticmethod
     def create(filepart_info, file_id):
         return add_to_db(FilePart(filepart_info, file_id))
+
+
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    start = db.Column(db.DateTime)
+    file_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
+    end = db.Column(db.DateTime)
+    stage = db.Column(db.Integer)
+    socket = db.Column(db.String(100))
+    s3 = db.Column(db.String(150)) #holds location of file in s3
+    def __init__(self, task_info):
+        self.start = datetime.utcnow()
+        self.stage = 0
+        self.file_id = task_info['file_id']
+        self.user_id = task_info['user_id']
+        self.socket = 'SOMETHING' #CREATES QUEUE
+
 #FOR TESTING TO CREATE DB!!!
 if __name__ == "__main__":
     print 'Creating Tables'

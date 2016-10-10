@@ -44,6 +44,31 @@ class UserErrors:
         }
         abort(401, error)
 
+
+class NodeErrors:
+
+    @staticmethod
+    def NodeDoesNotExist():
+        error = {
+            'Status Code': '404',
+            'Error': {
+                'Type': '',
+                'Message': 'Node is not found'
+            }
+        }
+        abort(404, error)
+
+    @staticmethod
+    def InsufficientNodePermission():
+        error = {
+            'Status Code': '401',
+            'Error': {
+                'Type': '',
+                'Message': 'Insufficient Permissions'
+            }
+        }
+        abort(401, error)
+
 class FileErrors:
 
     @staticmethod

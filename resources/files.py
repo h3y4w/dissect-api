@@ -9,7 +9,7 @@ def file_setup(db_):
     db=db_
 
 
-class Files(Resource):
+class File(Resource):
 
     @login_required()
     def post(self):
@@ -41,7 +41,7 @@ class Files(Resource):
         return dissect_db.File.create(params).id
         #upload a new file
 
-    class File (Resource):
+    class Files (Resource):
         def delete(self):
             #delete a file
             pass
@@ -63,7 +63,7 @@ class Files(Resource):
 
 
 
-class FileShares(Resource):
+class FileShare(Resource):
 
     @login_required()
     def post(self):
@@ -88,17 +88,20 @@ class FileShares(Resource):
                 FileErrors.InsufficientFilePermission()
         FileErrors.CannotShareFile()
 
-    class FileShare(Resource):
+    class FileShares(Resource):
         @login_required()
         def get(self, id):
             return dissect_db.to_dict(dissect_db.FileShare.find_by_id(id))
 
-class FileParts (Resource):
+class FilePart (Resource):
     @login_required()
     def post(self):
         pass
 
-    class FilePart (Resource):
+    class FileParts (Resource):
         def get(self):
             pass
+
+
+
 
